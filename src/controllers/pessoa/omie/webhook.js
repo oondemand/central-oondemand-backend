@@ -15,7 +15,6 @@ const SyncPessoa = async (req, res) => {
   if (topic === "ClienteFornecedor.Alterado") {
     await PessoaService.importarDoOmie({
       event,
-      appKey,
     });
   }
 

@@ -4,19 +4,35 @@ const FiltersUtils = require("../../utils/pagination/filter");
 const PaginationUtils = require("../../utils/pagination");
 const PessoaNaoEncontradaError = require("../errors/pessoa/pessoaNaoEncontradaError");
 const { LISTA_PAISES_OMIE } = require("../../constants/omie/paises");
+const { exportarParaOmie } = require("./omie");
 
 const criar = async ({ pessoa }) => {
   return await PessoaBusiness.criar({ pessoa });
 };
 
-const atualizar = async ({ id, pessoa }) => {
-  const pessoaAtualizada = await Pessoa.findByIdAndUpdate(id, pessoa, {
-    new: true,
-  });
+// const atualizar = async ({ id, pessoa }) => {
+//   const pessoaAtualizada = await Pessoa.findByIdAndUpdate(id, pessoa, {
+//     new: true,
+//   });
 
-  await pessoaAtualizada.save();
-  if (!pessoaAtualizada) return new PessoaNaoEncontradaError();
-  return pessoaAtualizada;
+//   if (!pessoaAtualizada) return new PessoaNaoEncontradaError();
+//   await exportarParaOmie({ pessoa: pessoaAtualizada });
+
+//   await pessoaAtualizada.save();
+//   return pessoaAtualizada;
+// };
+
+const atualizar = async ({ id, pessoa }) => {
+  const pessoaExistente = await Pessoa.findById(id);
+  if (!pessoaExistente) return new PessoaNaoEncontradaError();
+
+  // Copia os campos de `pessoa` para o documento existente
+  Object.assign(pessoaExistente, pessoa);
+
+  await exportarParaOmie({ pessoa: pessoaExistente });
+  await pessoaExistente.save(); // salva no banco de dados
+
+  return pessoaExistente;
 };
 
 const buscarPorId = async ({ id }) => {

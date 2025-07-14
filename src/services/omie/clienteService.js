@@ -1,75 +1,75 @@
 const apiOmie = require("../../config/apiOmie");
 
-const criarFornecedor = ({
-  // codigo_cliente_integracao,
-  documento,
-  nome,
-  tipo,
-  email,
-  banco,
-  agencia,
-  conta,
-  tipoConta,
-  cep,
-  rua,
-  numeroDoEndereco,
-  complemento,
-  cidade,
-  estado,
-  codPais,
-  pessoaFisica,
-  dataNascimento,
-  pis,
-  numeroRg,
-  orgaoEmissorRg,
-  razaoSocial,
-  nomeFantasia,
-  codigoCNAE,
-  codigoServicoNacional,
-  regimeTributario,
-  observacao,
-}) => {
-  const cliente = {
-    cnpj_cpf: documento,
-    razao_social: nome.substring(0, 60),
-    tags: ["Fornecedor"],
-    nome_fantasia: razaoSocial ? razaoSocial.substring(0, 60) : "",
-    endereco: rua ? rua : "",
-    endereco_numero: numeroDoEndereco ? numeroDoEndereco : "",
-    complemento: complemento ? complemento : "",
-    estado: estado ? estado : "",
-    cidade: cidade ? cidade : "",
-    cep: cep ? cep : "",
-    email: email ? email : "",
-    observacao: observacao ? observacao : "",
-    importado_api: "S",
-  };
+// const criarFornecedor = ({
+//   // codigo_cliente_integracao,
+//   documento,
+//   nome,
+//   tipo,
+//   email,
+//   banco,
+//   agencia,
+//   conta,
+//   tipoConta,
+//   cep,
+//   rua,
+//   numeroDoEndereco,
+//   complemento,
+//   cidade,
+//   estado,
+//   codPais,
+//   pessoaFisica,
+//   dataNascimento,
+//   pis,
+//   numeroRg,
+//   orgaoEmissorRg,
+//   razaoSocial,
+//   nomeFantasia,
+//   codigoCNAE,
+//   codigoServicoNacional,
+//   regimeTributario,
+//   observacao,
+// }) => {
+//   const cliente = {
+//     cnpj_cpf: documento,
+//     razao_social: nome.substring(0, 60),
+//     tags: ["Fornecedor"],
+//     nome_fantasia: razaoSocial ? razaoSocial.substring(0, 60) : "",
+//     endereco: rua ? rua : "",
+//     endereco_numero: numeroDoEndereco ? numeroDoEndereco : "",
+//     complemento: complemento ? complemento : "",
+//     estado: estado ? estado : "",
+//     cidade: cidade ? cidade : "",
+//     cep: cep ? cep : "",
+//     email: email ? email : "",
+//     observacao: observacao ? observacao : "",
+//     importado_api: "S",
+//   };
 
-  cliente.dadosBancarios = {
-    codigo_banco: banco ? banco.toString() : "",
-    agencia: agencia ? agencia : "",
-    conta_corrente: conta ? conta : "",
-    doc_titular: documento ? documento : "",
-    nome_titular: nome ? nome : "",
-  };
+//   cliente.dadosBancarios = {
+//     codigo_banco: banco ? banco.toString() : "",
+//     agencia: agencia ? agencia : "",
+//     conta_corrente: conta ? conta : "",
+//     doc_titular: documento ? documento : "",
+//     nome_titular: nome ? nome : "",
+//   };
 
-  if (tipoConta == "poupanca") {
-    observacao
-      ? (cliente.observacao += "\n\n conta poupança")
-      : (cliente.observacao = "conta poupança");
-  }
+//   if (tipoConta == "poupanca") {
+//     observacao
+//       ? (cliente.observacao += "\n\n conta poupança")
+//       : (cliente.observacao = "conta poupança");
+//   }
 
-  if (tipo === "ext") {
-    cliente.estado = "EX";
-    cliente.codigo_pais = codPais ? codPais : "";
-    cliente.cidade = "EX";
-    cliente.exterior = "S";
-    cliente.nif = documento; //numero de identificação fiscal para estrangeiros
-    cliente.cnpj_cpf = "";
-  }
+//   if (tipo === "ext") {
+//     cliente.estado = "EX";
+//     cliente.codigo_pais = codPais ? codPais : "";
+//     cliente.cidade = "EX";
+//     cliente.exterior = "S";
+//     cliente.nif = documento; //numero de identificação fiscal para estrangeiros
+//     cliente.cnpj_cpf = "";
+//   }
 
-  return cliente;
-};
+//   return cliente;
+// };
 
 const cache = {};
 const consultar = async (appKey, appSecret, codCliente) => {
@@ -360,12 +360,39 @@ const consultarCaracteristicas = async ({
   }
 };
 
+const alterarCaracteristicas = async ({
+  appKey,
+  appSecret,
+  codigo_cliente_omie,
+  campo,
+  conteudo,
+}) => {
+  try {
+    const body = {
+      call: "AlterarCaractCliente",
+      app_key: appKey,
+      app_secret: appSecret,
+      param: [{ codigo_cliente_omie, campo, conteudo }],
+    };
+
+    const response = await apiOmie.post("geral/clientescaract/", body);
+
+    console.log("Response", response);
+
+    return response;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
 module.exports = {
-  criarFornecedor,
+  // criarFornecedor,
   incluir,
   pesquisarPorCNPJ,
   consultar,
   pesquisarCodIntegracao,
   consultarCaracteristicas,
+  alterarCaracteristicas,
   update,
 };
